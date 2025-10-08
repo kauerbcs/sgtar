@@ -27,15 +27,22 @@
             <td class="text-truncate" style="max-width:380px;">{{ tarefa.descricao }}</td>
             <td>
                 {% if tarefa.concluida %}
-                    <span class="badge bg-success">Concluída</span>
+                    <span class="badge bg-success-subtle text-success-emphasis border border-success">Concluída</span>
                 {% else %}
-                    <span class="badge bg-warning text-dark">Pendente</span>
+                    <span class="badge bg-warning-subtle text-dark border border-warning">Pendente</span>
                 {% endif %}
             </td>
             <td class="text-end">
                 <a href="{% url 'editar_tarefa' tarefa.id %}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
-                <a href="#" onclick='confirmDelete(event, "{% url 'excluir_tarefa' tarefa.id %}")' class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+
+                <form action="{% url 'excluir_tarefa' tarefa.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir esta tarefa?');" title="Excluir">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
             </td>
+
         </tr>
         {% endfor %}
         </tbody>
