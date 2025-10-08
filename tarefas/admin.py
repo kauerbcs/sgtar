@@ -1,14 +1,20 @@
 from django.contrib import admin
-from .models import Tarefa
-
-# Register your models here.
-admin.site.site_header = "Administração do SGTAR"
-admin.site.site_title = "SGTAR Admin"
-admin.site.index_title = "Painel de Administração do SGTAR"
+from .models import Tarefa, Categoria, Tag
 
 @admin.register(Tarefa)
 class TarefaAdmin(admin.ModelAdmin):
-    list_display = ('id', 'titulo', 'descricao', 'concluida')  # colunas que aparecem na lista
-    list_filter = ('concluida',)  # filtro lateral
-    search_fields = ('titulo', 'descricao')  # barra de busca
-    list_editable = ('concluida',)  # permite marcar como concluída direto na lista
+    list_display = ('id', 'titulo', 'prioridade', 'concluida', 'created_at', 'completed_at', 'categoria')
+    list_filter = ('concluida', 'prioridade', 'categoria', 'created_at')
+    search_fields = ('titulo', 'descricao')
+    list_editable = ('concluida', 'prioridade')
+    autocomplete_fields = ('categoria',)
+    filter_horizontal = ('tags',)  # ou use raw_id_fields se preferir
+
+@admin.register(Categoria)
+class CategoriaAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("nome",)}
+    search_fields = ('nome',)
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    search_fields = ('nome',)

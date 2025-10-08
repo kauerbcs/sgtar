@@ -7,7 +7,41 @@
     <h5 class="mb-0"><i class="bi bi-card-list me-2"></i>Suas tarefas ({{ tarefas|length }})</h5>
     <a href="{% url 'adicionar_tarefa' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> Adicionar</a>
 </div>
-
+<div class="row mb-3">
+  <div class="col-md-8">
+    <form class="row g-2" method="get" action="{% url 'index' %}">
+      <div class="col-sm-6 col-md-4">
+        <input type="search" name="q" class="form-control" placeholder="Buscar título/descrição" value="{{ q }}">
+      </div>
+      <div class="col-sm-6 col-md-2">
+        <select name="prioridade" class="form-select">
+          <option value="">Prioridade</option>
+          <option value="alta" {% if prioridade_selected == 'alta' %}selected{% endif %}>Alta</option>
+          <option value="media" {% if prioridade_selected == 'media' %}selected{% endif %}>Média</option>
+          <option value="baixa" {% if prioridade_selected == 'baixa' %}selected{% endif %}>Baixa</option>
+        </select>
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <select name="categoria" class="form-select">
+          <option value="">Categoria</option>
+          {% for cat in categorias %}
+            <option value="{{ cat.id }}" {% if categoria_selected|add:'' == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6 col-md-2">
+        <select name="status" class="form-select">
+          <option value="">Todos</option>
+          <option value="pendente" {% if status_selected == 'pendente' %}selected{% endif %}>Pendentes</option>
+          <option value="concluida" {% if status_selected == 'concluida' %}selected{% endif %}>Concluídas</option>
+        </select>
+      </div>
+      <div class="col-md-1 text-end">
+        <button class="btn btn-primary btn-sm">Filtrar</button>
+      </div>
+    </form>
+  </div>
+</div>
 <div class="table-responsive">
     <table class="table table-hover align-middle">
         <thead class="table-light">
@@ -16,6 +50,9 @@
                 <th>Título</th>
                 <th>Descrição</th>
                 <th>Status</th>
+                <th>Prioridade</th>
+                <th>Criada em</th>
+                <th>Categoria/Tags</th>
                 <th class="text-end">Ações</th>
             </tr>
         </thead>
@@ -32,6 +69,27 @@
                     <span class="badge bg-warning-subtle text-dark border border-warning">Pendente</span>
                 {% endif %}
             </td>
+            <td>
+                {% if tarefa.prioridade == 'alta' %}
+                    <span class="badge bg-danger">Alta</span>
+                {% elif tarefa.prioridade == 'media' %}
+                    <span class="badge bg-warning text-dark">Média</span>
+                {% else %}
+                    <span class="badge bg-secondary">Baixa</span>
+                {% endif %}
+                </td>
+                <td>
+                {{ tarefa.created_at|date:"d/m/Y H:i" }}
+                {% if tarefa.completed_at %}
+                    <div class="text-success small">Concluída: {{ tarefa.completed_at|date:"d/m/Y H:i" }}</div>
+                {% endif %}
+                </td>
+                <td>
+                {% if tarefa.categoria %}<small class="badge bg-info text-dark">{{ tarefa.categoria.nome }}</small>{% endif %}
+                {% for tag in tarefa.tags.all %}
+                    <small class="badge bg-light border text-muted">{{ tag.nome }}</small>
+                {% endfor %}
+            </td>
             <td class="text-end">
                 <a href="{% url 'editar_tarefa' tarefa.id %}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
 
@@ -42,7 +100,6 @@
                     </button>
                 </form>
             </td>
-
         </tr>
         {% endfor %}
         </tbody>

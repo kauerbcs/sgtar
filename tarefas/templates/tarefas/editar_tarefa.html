@@ -8,33 +8,43 @@
     <a href="{% url 'index' %}" class="btn btn-sm btn-outline-secondary">Voltar</a>
 </div>
 
-<form action="{% url 'editar_tarefa' tarefa.id %}" method="post" class="row g-3">
-    {% csrf_token %}
+<form method="post" class="row g-3">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="col-12">
+    <label class="form-label">Título</label>
+    {{ form.titulo }}
+    {% for err in form.titulo.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+  </div>
 
-    <div class="col-12">
-        <div class="form-floating">
-            <input type="text" class="form-control" id="titulo" name="titulo" value="{{ tarefa.titulo }}" placeholder="Título" required>
-            <label for="titulo">Título</label>
-        </div>
+  <div class="col-12">
+    <label class="form-label">Descrição</label>
+    {{ form.descricao }}
+    {% for err in form.descricao.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Prioridade</label>
+    {{ form.prioridade }}
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Categoria</label>
+    {{ form.categoria }}
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Tags</label>
+    {{ form.tags }}
+  </div>
+
+  <div class="col-12 d-flex gap-2 align-items-center">
+    <div class="form-check me-auto">
+      {{ form.concluida }} <label class="form-check-label" for="{{ form.concluida.id_for_label }}">Concluída</label>
     </div>
 
-    <div class="col-12">
-        <div class="form-floating">
-            <textarea class="form-control" placeholder="Descrição" id="descricao" name="descricao" style="height:120px" required>{{ tarefa.descricao }}</textarea>
-            <label for="descricao">Descrição</label>
-        </div>
-    </div>
-
-    <div class="col-12 d-flex align-items-center">
-        <div class="form-check me-3">
-            <input class="form-check-input" type="checkbox" id="concluida" name="concluida" {% if tarefa.concluida %}checked{% endif %}>
-            <label class="form-check-label" for="concluida">Concluída</label>
-        </div>
-    </div>
-
-    <div class="col-12 d-flex gap-2">
-        <button type="submit" class="btn btn-primary"><i class="bi bi-save2 me-1"></i> Salvar alterações</button>
-        <a href="{% url 'index' %}" class="btn btn-outline-secondary">Cancelar</a>
-    </div>
+    <button type="submit" class="btn btn-primary">Salvar alterações</button>
+    <a href="{% url 'index' %}" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
 </form>
 {% endblock %}

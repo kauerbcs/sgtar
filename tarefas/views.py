@@ -2,12 +2,44 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.db import transaction
-from .models import Tarefa
+from django.db.models import Q
+from .models import Tarefa, Categoria, Tag
 from .forms import TarefaForm
 
 def index(request):
-    tarefas = Tarefa.objects.all().order_by('-id')  # opcional: mais recentes primeiro
-    return render(request, 'tarefas/index.html', {'tarefas': tarefas})
+    qs = Tarefa.objects.all().order_by('-id')
+    q = request.GET.get('q', '').strip()
+    prioridade = request.GET.get('prioridade', '')
+    categoria = request.GET.get('categoria', '')
+    status = request.GET.get('status', '')  # 'pendente' | 'concluida' | ''
+
+    if q:
+        qs = qs.filter(Q(titulo__icontains=q) | Q(descricao__icontains=q))
+
+    if prioridade in ('alta', 'media', 'baixa'):
+        qs = qs.filter(prioridade=prioridade)
+
+    if categoria:
+        qs = qs.filter(categoria__id=categoria)
+
+    if status == 'concluida':
+        qs = qs.filter(concluida=True)
+    elif status == 'pendente':
+        qs = qs.filter(concluida=False)
+
+    categorias = Categoria.objects.all()
+    tags = Tag.objects.all()
+
+    context = {
+        'tarefas': qs,
+        'q': q,
+        'prioridade_selected': prioridade,
+        'categoria_selected': categoria,
+        'status_selected': status,
+        'categorias': categorias,
+        'tags': tags,
+    }
+    return render(request, 'tarefas/index.html', context)
 
 @require_http_methods(["GET", "POST"])
 def adicionar_tarefa(request):
@@ -48,7 +80,6 @@ def editar_tarefa(request, tarefa_id):
 
 @require_http_methods(["POST"])
 def excluir_tarefa(request, tarefa_id):
-    # excluímos apenas via POST — mais seguro
     try:
         tarefa = get_object_or_404(Tarefa, id=tarefa_id)
         tarefa.delete()
