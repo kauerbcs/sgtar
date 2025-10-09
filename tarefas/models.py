@@ -33,11 +33,10 @@ class Tarefa(models.Model):
     prioridade = models.CharField(max_length=10, choices=PRIORIDADES, default=PRIORIDADE_MEDIA)
     categoria = models.ForeignKey(Categoria, null=True, blank=True, on_delete=models.SET_NULL, related_name='tarefas')
     tags = models.ManyToManyField(Tag, blank=True, related_name='tarefas')
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tarefas', default=1)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tarefas')
 
 
     def save(self, *args, **kwargs):
-        # ajusta completed_at automaticamente
         if self.concluida and not self.completed_at:
             self.completed_at = timezone.now()
         if not self.concluida and self.completed_at:
