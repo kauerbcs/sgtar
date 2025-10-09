@@ -37,7 +37,13 @@
                 Minhas Tarefas
             </a>
             <div class="ms-auto d-flex align-items-center">
-                {% block nav_extra %}{% endblock %}
+                {% if user.is_authenticated %}
+                    <span class="me-3 small text-muted">Olá, {{ user.username }}</span>
+                    <a class="btn btn-sm btn-outline-secondary me-2" href="{% url 'logout' %}">Sair</a>
+                {% else %}
+                    <a class="btn btn-sm btn-outline-primary me-2" href="{% url 'login' %}">Entrar</a>
+                    <a class="btn btn-sm btn-primary" href="{% url 'register' %}">Registrar</a>
+                {% endif %}
             </div>
         </div>
     </nav>

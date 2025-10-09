@@ -16,9 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from tarefas import views
+from tarefas import views as tarefas_views
+from tarefas import urls as tarefas_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('tarefas.urls')),
+    path('', include(tarefas_urls)),  # Inclui as URLs do app tarefas
+    path('accounts/', include('django.contrib.auth.urls')),  # URLs de autenticação
+    path('register/', tarefas_views.register, name='register'),  # Página de registro
 ]

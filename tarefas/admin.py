@@ -3,9 +3,9 @@ from .models import Tarefa, Categoria, Tag
 
 @admin.register(Tarefa)
 class TarefaAdmin(admin.ModelAdmin):
-    list_display = ('id', 'titulo', 'prioridade', 'concluida', 'created_at', 'completed_at', 'categoria')
-    list_filter = ('concluida', 'prioridade', 'categoria', 'created_at')
-    search_fields = ('titulo', 'descricao')
+    list_display = ('id', 'titulo', 'owner', 'prioridade', 'concluida', 'created_at', 'completed_at', 'categoria')
+    list_filter = ('concluida', 'prioridade', 'categoria', 'created_at', 'owner')
+    search_fields = ('titulo', 'descricao', 'owner__username')
     list_editable = ('concluida', 'prioridade')
     autocomplete_fields = ('categoria',)
     filter_horizontal = ('tags',)  # ou use raw_id_fields se preferir

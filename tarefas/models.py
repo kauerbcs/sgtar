@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -32,6 +33,8 @@ class Tarefa(models.Model):
     prioridade = models.CharField(max_length=10, choices=PRIORIDADES, default=PRIORIDADE_MEDIA)
     categoria = models.ForeignKey(Categoria, null=True, blank=True, on_delete=models.SET_NULL, related_name='tarefas')
     tags = models.ManyToManyField(Tag, blank=True, related_name='tarefas')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tarefas', default=1)
+
 
     def save(self, *args, **kwargs):
         # ajusta completed_at automaticamente

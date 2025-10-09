@@ -52,6 +52,9 @@
                 <th>Status</th>
                 <th>Prioridade</th>
                 <th>Criada em</th>
+                {% if user.is_superuser %}
+                    <th>Owner</th>
+                {% endif %}
                 <th>Categoria/Tags</th>
                 <th class="text-end">Ações</th>
             </tr>
@@ -77,14 +80,25 @@
                 {% else %}
                     <span class="badge bg-secondary">Baixa</span>
                 {% endif %}
-                </td>
-                <td>
+            </td>
+            <td>
                 {{ tarefa.created_at|date:"d/m/Y H:i" }}
                 {% if tarefa.completed_at %}
                     <div class="text-success small">Concluída: {{ tarefa.completed_at|date:"d/m/Y H:i" }}</div>
                 {% endif %}
-                </td>
+            </td>
+
+            {% if user.is_superuser %}
                 <td>
+                    {% if tarefa.owner %}
+                        {{ tarefa.owner.username }}
+                    {% else %}
+                        &mdash;
+                    {% endif %}
+                </td>
+            {% endif %}
+
+            <td>
                 {% if tarefa.categoria %}<small class="badge bg-info text-dark">{{ tarefa.categoria.nome }}</small>{% endif %}
                 {% for tag in tarefa.tags.all %}
                     <small class="badge bg-light border text-muted">{{ tag.nome }}</small>
