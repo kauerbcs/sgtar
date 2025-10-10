@@ -87,150 +87,152 @@
 </style>
 {% endblock %}
 
-{% block content %}
-<div class="auth-card">
-    <!-- Header -->
-    <div class="auth-header">
-        <i class="bi bi-person-plus auth-icon"></i>
-        <h4 class="mb-2">Crie sua conta</h4>
-        <p class="mb-0 opacity-75">Comece a organizar suas tarefas hoje mesmo</p>
-    </div>
-    
-    <!-- Body -->
-    <div class="auth-body">
-        {% if form.non_field_errors %}
-            <div class="alert alert-danger border-0 rounded-3">
-                <i class="bi bi-exclamation-triangle me-2"></i>
-                {{ form.non_field_errors }}
-            </div>
-        {% endif %}
-
-        <div class="benefits-list">
-            <div class="d-flex align-items-center mb-2">
-                <i class="bi bi-gift text-success me-2" style="font-size: 1.2rem;"></i>
-                <strong>Conta 100% gratuita</strong>
-            </div>
-            <div class="row g-2">
-                <div class="col-6">
-                    <small class="d-flex align-items-center text-muted">
-                        <i class="bi bi-check-circle-fill text-success me-1"></i>
-                        Tarefas ilimitadas
-                    </small>
-                </div>
-                <div class="col-6">
-                    <small class="d-flex align-items-center text-muted">
-                        <i class="bi bi-check-circle-fill text-success me-1"></i>
-                        Categorias e tags
-                    </small>
-                </div>
-                <div class="col-6">
-                    <small class="d-flex align-items-center text-muted">
-                        <i class="bi bi-check-circle-fill text-success me-1"></i>
-                        Filtros avançados
-                    </small>
-                </div>
-                <div class="col-6">
-                    <small class="d-flex align-items-center text-muted">
-                        <i class="bi bi-check-circle-fill text-success me-1"></i>
-                        Interface moderna
-                    </small>
-                </div>
-            </div>
+{% block wrapper %}
+    {% block content %}
+    <div class="auth-card">
+        <!-- Header -->
+        <div class="auth-header">
+            <i class="bi bi-person-plus auth-icon"></i>
+            <h4 class="mb-2">Crie sua conta</h4>
+            <p class="mb-0 opacity-75">Comece a organizar suas tarefas hoje mesmo</p>
         </div>
+        
+        <!-- Body -->
+        <div class="auth-body">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger border-0 rounded-3">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
 
-        <form method="post" novalidate>
-            {% csrf_token %}
-            
-            <div class="form-floating">
-                {{ form.username }}
-                <label for="{{ form.username.id_for_label }}">
-                    <i class="bi bi-person me-2"></i>Nome de usuário
-                </label>
-                {% for err in form.username.errors %}
-                    <div class="text-danger small mt-1">
-                        <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+            <div class="benefits-list">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-gift text-success me-2" style="font-size: 1.2rem;"></i>
+                    <strong>Conta 100% gratuita</strong>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <small class="d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>
+                            Tarefas ilimitadas
+                        </small>
                     </div>
-                {% endfor %}
-            </div>
-
-            <div class="form-floating">
-                {{ form.password1 }}
-                <label for="{{ form.password1.id_for_label }}">
-                    <i class="bi bi-lock me-2"></i>Senha
-                </label>
-                {% for err in form.password1.errors %}
-                    <div class="text-danger small mt-1">
-                        <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                    <div class="col-6">
+                        <small class="d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>
+                            Categorias e tags
+                        </small>
                     </div>
-                {% endfor %}
-            </div>
-
-            <div class="form-floating">
-                {{ form.password2 }}
-                <label for="{{ form.password2.id_for_label }}">
-                    <i class="bi bi-shield-check me-2"></i>Confirmar senha
-                </label>
-                {% for err in form.password2.errors %}
-                    <div class="text-danger small mt-1">
-                        <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                    <div class="col-6">
+                        <small class="d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>
+                            Filtros avançados
+                        </small>
                     </div>
-                {% endfor %}
+                    <div class="col-6">
+                        <small class="d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>
+                            Interface moderna
+                        </small>
+                    </div>
+                </div>
             </div>
 
-            <div class="password-help">
-                <small class="text-muted">
-                    <i class="bi bi-info-circle me-1"></i>
-                    <strong>Dica de segurança:</strong> Use uma senha forte com pelo menos 8 caracteres, incluindo letras e números.
-                </small>
-            </div>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="form-floating">
+                    {{ form.username }}
+                    <label for="{{ form.username.id_for_label }}">
+                        <i class="bi bi-person me-2"></i>Nome de usuário
+                    </label>
+                    {% for err in form.username.errors %}
+                        <div class="text-danger small mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                        </div>
+                    {% endfor %}
+                </div>
 
-            <button type="submit" class="btn btn-success btn-auth mt-3">
-                <i class="bi bi-person-plus me-2"></i>Criar minha conta
-            </button>
-        </form>
+                <div class="form-floating">
+                    {{ form.password1 }}
+                    <label for="{{ form.password1.id_for_label }}">
+                        <i class="bi bi-lock me-2"></i>Senha
+                    </label>
+                    {% for err in form.password1.errors %}
+                        <div class="text-danger small mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-floating">
+                    {{ form.password2 }}
+                    <label for="{{ form.password2.id_for_label }}">
+                        <i class="bi bi-shield-check me-2"></i>Confirmar senha
+                    </label>
+                    {% for err in form.password2.errors %}
+                        <div class="text-danger small mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="password-help">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Dica de segurança:</strong> Use uma senha forte com pelo menos 8 caracteres, incluindo letras e números.
+                    </small>
+                </div>
+
+                <button type="submit" class="btn btn-success btn-auth mt-3">
+                    <i class="bi bi-person-plus me-2"></i>Criar minha conta
+                </button>
+            </form>
+        </div>
+        
+        <!-- Footer -->
+        <div class="auth-footer">
+            <p class="text-muted mb-2">Já tem uma conta?</p>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary rounded-pill px-4">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Fazer login
+            </a>
+        </div>
     </div>
-    
-    <!-- Footer -->
-    <div class="auth-footer">
-        <p class="text-muted mb-2">Já tem uma conta?</p>
-        <a href="{% url 'login' %}" class="btn btn-outline-primary rounded-pill px-4">
-            <i class="bi bi-box-arrow-in-right me-1"></i>Fazer login
-        </a>
-    </div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Adicionar classes Bootstrap aos campos
-    document.querySelectorAll('form input').forEach(function (el) {
-        if (!el.classList.contains('form-control') && el.type !== 'hidden') {
-            el.classList.add('form-control');
-        }
-    });
-    
-    // Focar no primeiro campo
-    const firstInput = document.querySelector('form input[type="text"]');
-    if (firstInput) firstInput.focus();
-    
-    // Feedback visual para confirmação de senha
-    const password1 = document.querySelector('input[name="password1"]');
-    const password2 = document.querySelector('input[name="password2"]');
-    
-    if (password1 && password2) {
-        password2.addEventListener('input', function() {
-            if (password2.value && password1.value) {
-                if (password1.value === password2.value) {
-                    password2.classList.remove('is-invalid');
-                    password2.classList.add('is-valid');
-                } else {
-                    password2.classList.remove('is-valid');
-                    password2.classList.add('is-invalid');
-                }
-            } else {
-                password2.classList.remove('is-valid', 'is-invalid');
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Adicionar classes Bootstrap aos campos
+        document.querySelectorAll('form input').forEach(function (el) {
+            if (!el.classList.contains('form-control') && el.type !== 'hidden') {
+                el.classList.add('form-control');
             }
         });
-    }
-});
-</script>
+        
+        // Focar no primeiro campo
+        const firstInput = document.querySelector('form input[type="text"]');
+        if (firstInput) firstInput.focus();
+        
+        // Feedback visual para confirmação de senha
+        const password1 = document.querySelector('input[name="password1"]');
+        const password2 = document.querySelector('input[name="password2"]');
+        
+        if (password1 && password2) {
+            password2.addEventListener('input', function() {
+                if (password2.value && password1.value) {
+                    if (password1.value === password2.value) {
+                        password2.classList.remove('is-invalid');
+                        password2.classList.add('is-valid');
+                    } else {
+                        password2.classList.remove('is-valid');
+                        password2.classList.add('is-invalid');
+                    }
+                } else {
+                    password2.classList.remove('is-valid', 'is-invalid');
+                }
+            });
+        }
+    });
+    </script>
+    {% endblock %}
 {% endblock %}

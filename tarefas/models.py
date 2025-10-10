@@ -25,15 +25,15 @@ class Tarefa(models.Model):
         (PRIORIDADE_BAIXA, 'Baixa'),
     ]
 
-    titulo = models.CharField(max_length=200)
-    descricao = models.TextField()
-    concluida = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    completed_at = models.DateTimeField(null=True, blank=True)
-    prioridade = models.CharField(max_length=10, choices=PRIORIDADES, default=PRIORIDADE_MEDIA)
-    categoria = models.ForeignKey(Categoria, null=True, blank=True, on_delete=models.SET_NULL, related_name='tarefas')
-    tags = models.ManyToManyField(Tag, blank=True, related_name='tarefas')
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tarefas')
+    titulo = models.CharField(max_length=200, verbose_name='Título')
+    descricao = models.TextField(verbose_name='Descrição')
+    concluida = models.BooleanField(default=False, verbose_name='Concluída')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
+    completed_at = models.DateTimeField(null=True, blank=True, verbose_name='Concluído em')
+    prioridade = models.CharField(max_length=10, choices=PRIORIDADES, default=PRIORIDADE_MEDIA, verbose_name='Prioridade')
+    categoria = models.ForeignKey(Categoria, null=True, blank=True, on_delete=models.SET_NULL, related_name='tarefas', verbose_name='Categoria')
+    tags = models.ManyToManyField(Tag, blank=True, related_name='tarefas', verbose_name='Tags')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tarefas', verbose_name='Proprietário')
 
 
     def save(self, *args, **kwargs):

@@ -227,9 +227,11 @@
                 {% endfor %}
             {% endif %}
 
-            <div class="card card-main p-4">
-                {% block content %}{% endblock %}
-            </div>
+            {% block wrapper %}
+                <div class="card card-main p-4">
+                    {% block content %}{% endblock %}
+                </div>
+            {% endblock %}
         </div>
     </main>
 

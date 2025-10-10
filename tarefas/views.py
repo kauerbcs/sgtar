@@ -57,6 +57,9 @@ def index(request):
 
     context = {
         'tarefas': qs,
+        'tarefas_concluidas': qs.filter(concluida=True),
+        'tarefas_pendentes': qs.filter(concluida=False),
+        'tarefas_alta_prioridade': qs.filter(prioridade='alta'),
         'q': q,
         'prioridade_selected': prioridade,
         'categoria_selected': categoria,
