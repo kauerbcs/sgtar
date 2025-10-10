@@ -1,48 +1,164 @@
 {% extends 'tarefas/base.html' %}
+
 {% block title %}Adicionar Tarefa{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-section {
+        background: rgba(99, 102, 241, 0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(99, 102, 241, 0.1);
+    }
+    
+    .section-title {
+        color: var(--brand);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Adicionar nova tarefa</h5>
-    <a href="{% url 'index' %}" class="btn btn-sm btn-outline-secondary">Voltar</a>
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="mb-1 d-flex align-items-center">
+                    <i class="bi bi-plus-circle me-2" style="color: var(--brand);"></i>
+                    Nova Tarefa
+                </h4>
+                <p class="text-muted mb-0">Adicione uma nova tarefa à sua lista</p>
+            </div>
+            <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Voltar
+            </a>
+        </div>
+        
+        <!-- Formulário -->
+        <form action="{% url 'adicionar_tarefa' %}" method="post">
+            {% csrf_token %}
+            
+            <!-- Seção: Informações Básicas -->
+            <div class="form-section p-4 mb-4">
+                <h6 class="section-title mb-3">
+                    <i class="bi bi-info-circle me-2"></i>Informações Básicas
+                </h6>
+                
+                {{ form.non_field_errors }}
+                
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-medium">Título da Tarefa <span class="text-danger">*</span></label>
+                        {{ form.titulo }}
+                        {% for err in form.titulo.errors %}
+                            <div class="text-danger small mt-1">
+                                <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                            </div>
+                        {% endfor %}
+                        <div class="form-text">Um título claro e descritivo para sua tarefa</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-medium">Descrição <span class="text-danger">*</span></label>
+                        {{ form.descricao }}
+                        {% for err in form.descricao.errors %}
+                            <div class="text-danger small mt-1">
+                                <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                            </div>
+                        {% endfor %}
+                        <div class="form-text">Descreva detalhadamente o que precisa ser feito</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seção: Categorização -->
+            <div class="form-section p-4 mb-4">
+                <h6 class="section-title mb-3">
+                    <i class="bi bi-tags me-2"></i>Categorização e Prioridade
+                </h6>
+                
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Prioridade</label>
+                        {{ form.prioridade }}
+                        <div class="form-text">
+                            <small>
+                                🔴 <strong>Alta:</strong> Urgente e importante<br>
+                                🟡 <strong>Média:</strong> Importante mas não urgente<br>
+                                🔵 <strong>Baixa:</strong> Pode ser feita depois
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Categoria</label>
+                        {{ form.categoria }}
+                        <div class="form-text">Organize suas tarefas por categoria</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Tags</label>
+                        {{ form.tags }}
+                        <div class="form-text">Adicione tags para facilitar a busca</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seção: Status -->
+            <div class="form-section p-4 mb-4">
+                <h6 class="section-title mb-3">
+                    <i class="bi bi-check-square me-2"></i>Status Inicial
+                </h6>
+                
+                <div class="form-check form-switch">
+                    {{ form.concluida }}
+                    <label class="form-check-label fw-medium" for="{{ form.concluida.id_for_label }}">
+                        Marcar como concluída
+                    </label>
+                    <div class="form-text">Ative esta opção se a tarefa já foi completada</div>
+                </div>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="d-flex gap-2 justify-content-end">
+                <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Cancelar
+                </a>
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-check-lg me-1"></i>Criar Tarefa
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<form action="{% url 'adicionar_tarefa' %}" method="post" class="row g-3">
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  <div class="col-12">
-    <label class="form-label">Título</label>
-    {{ form.titulo }}
-    {% for err in form.titulo.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
-  </div>
-
-  <div class="col-12">
-    <label class="form-label">Descrição</label>
-    {{ form.descricao }}
-    {% for err in form.descricao.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
-  </div>
-
-  <div class="col-md-4">
-    <label class="form-label">Prioridade</label>
-    {{ form.prioridade }}
-  </div>
-
-  <div class="col-md-4">
-    <label class="form-label">Categoria</label>
-    {{ form.categoria }}
-  </div>
-
-  <div class="col-md-4">
-    <label class="form-label">Tags</label>
-    {{ form.tags }}
-  </div>
-
-  <div class="col-12 d-flex gap-2 align-items-center">
-    <div class="form-check me-auto">
-      {{ form.concluida }} <label class="form-check-label" for="{{ form.concluida.id_for_label }}">Concluída</label>
-    </div>
-
-        <button type="submit" class="btn btn-success"><i class="bi bi-check-lg me-1"></i> Adicionar</button>
-        <a href="{% url 'index' %}" class="btn btn-outline-secondary">Cancelar</a>
-    </div>
-</form>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adicionar classes Bootstrap aos campos do formulário
+    document.querySelectorAll('form input, form select, form textarea').forEach(function (el) {
+        if (!el.classList.contains('form-control') && !el.classList.contains('form-select') && el.type !== 'checkbox') {
+            if (el.tagName === 'SELECT') {
+                el.classList.add('form-select');
+            } else {
+                el.classList.add('form-control');
+            }
+        }
+        if (el.type === 'checkbox') {
+            el.classList.add('form-check-input');
+        }
+    });
+    
+    // Focar no primeiro campo
+    const firstInput = document.querySelector('form input[type="text"]');
+    if (firstInput) firstInput.focus();
+});
+</script>
 {% endblock %}

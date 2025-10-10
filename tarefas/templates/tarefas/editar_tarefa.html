@@ -2,49 +2,220 @@
 
 {% block title %}Editar Tarefa — {{ tarefa.titulo }}{% endblock %}
 
+{% block extra_head %}
+<style>
+    .form-section {
+        background: rgba(99, 102, 241, 0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(99, 102, 241, 0.1);
+    }
+    
+    .section-title {
+        color: var(--brand);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .task-info-card {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+        border-radius: 12px;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Editar tarefa</h5>
-    <a href="{% url 'index' %}" class="btn btn-sm btn-outline-secondary">Voltar</a>
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="mb-1 d-flex align-items-center">
+                    <i class="bi bi-pencil-square me-2" style="color: var(--brand);"></i>
+                    Editar Tarefa
+                </h4>
+                <p class="text-muted mb-0">Modifique os detalhes da sua tarefa</p>
+            </div>
+            <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Voltar
+            </a>
+        </div>
+        
+        <!-- Informações da tarefa -->
+        <div class="task-info-card p-3 mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center">
+                        {% if tarefa.concluida %}
+                            <i class="bi bi-check-circle-fill text-success me-2" style="font-size: 1.2rem;"></i>
+                        {% else %}
+                            <i class="bi bi-circle text-muted me-2" style="font-size: 1.2rem;"></i>
+                        {% endif %}
+                        <div>
+                            <h6 class="mb-1">{{ tarefa.titulo }}</h6>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar3 me-1"></i>Criada em {{ tarefa.created_at|date:"d/m/Y \à\s H:i" }}
+                                {% if tarefa.completed_at %}
+                                    • <i class="bi bi-check-circle me-1"></i>Concluída em {{ tarefa.completed_at|date:"d/m/Y \à\s H:i" }}
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
+                        {% if tarefa.prioridade == 'alta' %}
+                            <span class="badge" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">🔴 Alta</span>
+                        {% elif tarefa.prioridade == 'media' %}
+                            <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">🟡 Média</span>
+                        {% else %}
+                            <span class="badge" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;">🔵 Baixa</span>
+                        {% endif %}
+                        
+                        {% if tarefa.concluida %}
+                            <span class="badge" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                                <i class="bi bi-check-lg me-1"></i>Concluída
+                            </span>
+                        {% else %}
+                            <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                                <i class="bi bi-clock me-1"></i>Pendente
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Formulário -->
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Seção: Informações Básicas -->
+            <div class="form-section p-4 mb-4">
+                <h6 class="section-title mb-3">
+                    <i class="bi bi-info-circle me-2"></i>Informações Básicas
+                </h6>
+                
+                {{ form.non_field_errors }}
+                
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-medium">Título da Tarefa <span class="text-danger">*</span></label>
+                        {{ form.titulo }}
+                        {% for err in form.titulo.errors %}
+                            <div class="text-danger small mt-1">
+                                <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-medium">Descrição <span class="text-danger">*</span></label>
+                        {{ form.descricao }}
+                        {% for err in form.descricao.errors %}
+                            <div class="text-danger small mt-1">
+                                <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seção: Categorização -->
+            <div class="form-section p-4 mb-4">
+                <h6 class="section-title mb-3">
+                    <i class="bi bi-tags me-2"></i>Categorização e Prioridade
+                </h6>
+                
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Prioridade</label>
+                        {{ form.prioridade }}
+                        <div class="form-text">
+                            <small>🔴 Alta • 🟡 Média • 🔵 Baixa</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Categoria</label>
+                        {{ form.categoria }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Tags</label>
+                        {{ form.tags }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seção: Status -->
+            <div class="form-section p-4 mb-4">
+                <h6 class="section-title mb-3">
+                    <i class="bi bi-check-square me-2"></i>Status da Tarefa
+                </h6>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            {{ form.concluida }}
+                            <label class="form-check-label fw-medium" for="{{ form.concluida.id_for_label }}">
+                                Marcar como concluída
+                            </label>
+                            <div class="form-text">
+                                {% if tarefa.concluida %}
+                                    Esta tarefa está marcada como concluída
+                                {% else %}
+                                    Marque quando a tarefa for finalizada
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        {% if tarefa.completed_at %}
+                            <div class="alert alert-success py-2 mb-0">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <strong>Concluída:</strong> {{ tarefa.completed_at|date:"d/m/Y \à\s H:i" }}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning py-2 mb-0">
+                                <i class="bi bi-clock me-2"></i>
+                                <strong>Status:</strong> Aguardando conclusão
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="d-flex gap-2 justify-content-end">
+                <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check-lg me-1"></i>Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<form method="post" class="row g-3">
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  <div class="col-12">
-    <label class="form-label">Título</label>
-    {{ form.titulo }}
-    {% for err in form.titulo.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
-  </div>
-
-  <div class="col-12">
-    <label class="form-label">Descrição</label>
-    {{ form.descricao }}
-    {% for err in form.descricao.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
-  </div>
-
-  <div class="col-md-4">
-    <label class="form-label">Prioridade</label>
-    {{ form.prioridade }}
-  </div>
-
-  <div class="col-md-4">
-    <label class="form-label">Categoria</label>
-    {{ form.categoria }}
-  </div>
-
-  <div class="col-md-4">
-    <label class="form-label">Tags</label>
-    {{ form.tags }}
-  </div>
-
-  <div class="col-12 d-flex gap-2 align-items-center">
-    <div class="form-check me-auto">
-      {{ form.concluida }} <label class="form-check-label" for="{{ form.concluida.id_for_label }}">Concluída</label>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Salvar alterações</button>
-    <a href="{% url 'index' %}" class="btn btn-outline-secondary">Cancelar</a>
-  </div>
-</form>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adicionar classes Bootstrap aos campos do formulário
+    document.querySelectorAll('form input, form select, form textarea').forEach(function (el) {
+        if (!el.classList.contains('form-control') && !el.classList.contains('form-select') && el.type !== 'checkbox') {
+            if (el.tagName === 'SELECT') {
+                el.classList.add('form-select');
+            } else {
+                el.classList.add('form-control');
+            }
+        }
+        if (el.type === 'checkbox') {
+            el.classList.add('form-check-input');
+        }
+    });
+});
+</script>
 {% endblock %}

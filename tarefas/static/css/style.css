@@ -1,0 +1,250 @@
+/* CSS customizado para o projeto Minhas Tarefas */
+
+/* Melhorias de responsividade para mobile */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .card-main {
+        margin: 0 10px;
+        border-radius: 16px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .navbar-brand span {
+        display: none;
+    }
+    
+    .table-responsive {
+        border-radius: 8px;
+    }
+    
+    .btn {
+        border-radius: 6px;
+    }
+    
+    .auth-card {
+        margin: 1rem auto;
+        border-radius: 16px;
+    }
+    
+    .auth-header {
+        border-radius: 16px 16px 0 0;
+        padding: 1.5rem;
+    }
+    
+    .auth-icon {
+        font-size: 2rem !important;
+    }
+    
+    .form-section {
+        border-radius: 8px;
+    }
+    
+    h4 {
+        font-size: 1.2rem;
+    }
+    
+    h5 {
+        font-size: 1.1rem;
+    }
+    
+    .stats-cards .card {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Melhorias para tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        max-width: 95%;
+    }
+    
+    .auth-card {
+        max-width: 500px;
+    }
+}
+
+/* Animações adicionais */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translate3d(30px, 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translate3d(-30px, 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Aplicar animações */
+.stats-cards .card:nth-child(1) {
+    animation: slideInLeft 0.6s ease-out 0.1s both;
+}
+
+.stats-cards .card:nth-child(2) {
+    animation: slideInLeft 0.6s ease-out 0.2s both;
+}
+
+.stats-cards .card:nth-child(3) {
+    animation: slideInRight 0.6s ease-out 0.3s both;
+}
+
+.stats-cards .card:nth-child(4) {
+    animation: slideInRight 0.6s ease-out 0.4s both;
+}
+
+.table tbody tr {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.alert {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+.auth-card {
+    animation: scaleIn 0.6s ease-out;
+}
+
+/* Melhorias de acessibilidade */
+.btn:focus {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    outline: none;
+}
+
+/* Estados de hover mais suaves */
+.table-hover tbody tr:hover {
+    transition: all 0.3s ease;
+}
+
+.navbar {
+    transition: all 0.3s ease;
+}
+
+/* Melhorias para impressão */
+@media print {
+    .navbar,
+    .btn,
+    footer {
+        display: none !important;
+    }
+    
+    .card-main {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    body {
+        background: white !important;
+    }
+}
+
+/* Estados de loading */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--brand);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Melhorias para dark mode (preparação futura) */
+@media (prefers-color-scheme: dark) {
+    /* Estilos para dark mode podem ser adicionados aqui no futuro */
+}
+
+/* Utilitários adicionais */
+.text-gradient {
+    background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.border-gradient {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, var(--brand), var(--brand-light)) 1;
+}
+
+.shadow-custom {
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15);
+}
+
+/* Melhorias para elementos específicos */
+.task-row {
+    transition: all 0.3s ease;
+}
+
+.task-row:hover {
+    background: rgba(99, 102, 241, 0.02);
+    border-left: 4px solid var(--brand);
+}
+
+.priority-indicator {
+    width: 4px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.priority-alta .priority-indicator {
+    background: var(--danger);
+}
+
+.priority-media .priority-indicator {
+    background: var(--warning);
+}
+
+.priority-baixa .priority-indicator {
+    background: var(--info);
+}

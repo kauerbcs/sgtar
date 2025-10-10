@@ -1,24 +1,166 @@
 {% extends 'tarefas/base.html' %}
-{% block title %}Login{% endblock %}
+
+{% block title %}Entrar — Minhas Tarefas{% endblock %}
+
+{% block extra_head %}
+<style>
+  .auth-card {
+    max-width: 480px;
+    margin: 2rem auto;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .auth-header {
+    background: linear-gradient(135deg, var(--brand), var(--brand-light));
+    color: white;
+    border-radius: 20px 20px 0 0;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .auth-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+
+  .auth-body {
+    padding: 2rem;
+  }
+
+  .form-floating {
+    margin-bottom: 1rem;
+  }
+
+  .form-floating > .form-control {
+    border-radius: 12px;
+    border: 2px solid rgba(99, 102, 241, 0.1);
+    background: rgba(99, 102, 241, 0.02);
+  }
+
+  .form-floating > .form-control:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  .btn-auth {
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+    border: none;
+    width: 100%;
+  }
+
+  .btn-auth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+  }
+
+  .auth-footer {
+    text-align: center;
+    padding: 1.5rem 2rem 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .welcome-message {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6">
-    <h5>Entrar</h5>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.non_field_errors }}
-      <div class="mb-3">
-        <label class="form-label">Usuário</label>
-        {{ form.username }}
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Senha</label>
-        {{ form.password }}
-      </div>
-      <button class="btn btn-primary">Entrar</button>
-      <a href="{% url 'register' %}" class="btn btn-link">Criar conta</a>
-    </form>
-  </div>
+<div class="auth-card">
+    <!-- Header -->
+    <div class="auth-header">
+        <i class="bi bi-box-arrow-in-right auth-icon"></i>
+        <h4 class="mb-2">Bem-vindo de volta!</h4>
+        <p class="mb-0 opacity-75">Entre na sua conta para acessar suas tarefas</p>
+    </div>
+    
+    <!-- Body -->
+    <div class="auth-body">
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger border-0 rounded-3">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="welcome-message">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-lightbulb text-warning me-2" style="font-size: 1.2rem;"></i>
+                <div>
+                    <small class="fw-medium">Organize sua vida</small>
+                    <div class="small text-muted">Acesse suas tarefas e mantenha tudo sob controle</div>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <div class="form-floating">
+                {{ form.username }}
+                <label for="{{ form.username.id_for_label }}">
+                    <i class="bi bi-person me-2"></i>Nome de usuário
+                </label>
+                {% for err in form.username.errors %}
+                    <div class="text-danger small mt-1">
+                        <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="form-floating">
+                {{ form.password }}
+                <label for="{{ form.password.id_for_label }}">
+                    <i class="bi bi-lock me-2"></i>Senha
+                </label>
+                {% for err in form.password.errors %}
+                    <div class="text-danger small mt-1">
+                        <i class="bi bi-exclamation-circle me-1"></i>{{ err }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-auth">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+            </button>
+        </form>
+    </div>
+    
+    <!-- Footer -->
+    <div class="auth-footer">
+        <p class="text-muted mb-2">Ainda não tem uma conta?</p>
+        <a href="{% url 'register' %}" class="btn btn-outline-primary rounded-pill px-4">
+            <i class="bi bi-person-plus me-1"></i>Criar conta gratuita
+        </a>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adicionar classes Bootstrap aos campos
+    document.querySelectorAll('form input').forEach(function (el) {
+        if (!el.classList.contains('form-control') && el.type !== 'hidden') {
+            el.classList.add('form-control');
+        }
+    });
+    
+    // Focar no primeiro campo
+    const firstInput = document.querySelector('form input[type="text"]');
+    if (firstInput) firstInput.focus();
+});
+</script>
 {% endblock %}

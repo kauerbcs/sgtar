@@ -3,129 +3,281 @@
 {% block title %}Lista de Tarefas{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="mb-0"><i class="bi bi-card-list me-2"></i>Suas tarefas ({{ tarefas|length }})</h5>
-    <a href="{% url 'adicionar_tarefa' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> Adicionar</a>
+<!-- Header com estatísticas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="mb-1 d-flex align-items-center">
+                    <i class="bi bi-card-list me-2" style="color: var(--brand);"></i>
+                    Suas Tarefas
+                </h4>
+                <p class="text-muted mb-0">Gerencie e organize suas atividades diárias</p>
+            </div>
+            <a href="{% url 'adicionar_tarefa' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Nova Tarefa
+            </a>
+        </div>
+    </div>
 </div>
-<div class="row mb-3">
-  <div class="col-md-8">
-    <form class="row g-2" method="get" action="{% url 'index' %}">
-      <div class="col-sm-6 col-md-4">
-        <input type="search" name="q" class="form-control" placeholder="Buscar título/descrição" value="{{ q }}">
-      </div>
-      <div class="col-sm-6 col-md-2">
-        <select name="prioridade" class="form-select">
-          <option value="">Prioridade</option>
-          <option value="alta" {% if prioridade_selected == 'alta' %}selected{% endif %}>Alta</option>
-          <option value="media" {% if prioridade_selected == 'media' %}selected{% endif %}>Média</option>
-          <option value="baixa" {% if prioridade_selected == 'baixa' %}selected{% endif %}>Baixa</option>
-        </select>
-      </div>
-      <div class="col-sm-6 col-md-3">
-        <select name="categoria" class="form-select">
-          <option value="">Categoria</option>
-          {% for cat in categorias %}
-            <option value="{{ cat.id }}" {% if categoria_selected|add:'' == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nome }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-sm-6 col-md-2">
-        <select name="status" class="form-select">
-          <option value="">Todos</option>
-          <option value="pendente" {% if status_selected == 'pendente' %}selected{% endif %}>Pendentes</option>
-          <option value="concluida" {% if status_selected == 'concluida' %}selected{% endif %}>Concluídas</option>
-        </select>
-      </div>
-      <div class="col-md-1 text-end">
-        <button class="btn btn-primary">Filtrar</button>
-      </div>
-    </form>
-  </div>
+
+<!-- Cards de estatísticas -->
+<div class="row mb-4 stats-cards">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card border-0 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="card-body text-center">
+                <i class="bi bi-list-ul" style="font-size: 2rem; opacity: 0.8;"></i>
+                <h3 class="mt-2 mb-0">{{ tarefas|length }}</h3>
+                <small class="opacity-75">Total de Tarefas</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card border-0 h-100" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle" style="font-size: 2rem; opacity: 0.8;"></i>
+                <h3 class="mt-2 mb-0">{{ tarefas_concluidas|length|default:0 }}</h3>
+                <small class="opacity-75">Concluídas</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card border-0 h-100" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
+            <div class="card-body text-center">
+                <i class="bi bi-clock" style="font-size: 2rem; opacity: 0.8;"></i>
+                <h3 class="mt-2 mb-0">{{ tarefas_pendentes|length|default:0 }}</h3>
+                <small class="opacity-75">Pendentes</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card border-0 h-100" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
+            <div class="card-body text-center">
+                <i class="bi bi-exclamation-triangle" style="font-size: 2rem; opacity: 0.8;"></i>
+                <h3 class="mt-2 mb-0">{{ tarefas_alta_prioridade|length|default:0 }}</h3>
+                <small class="opacity-75">Alta Prioridade</small>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Filtros -->
+<div class="card border-0 mb-4" style="background: rgba(99, 102, 241, 0.05);">
+    <div class="card-body">
+        <form class="row g-3" method="get" action="{% url 'index' %}">
+            <div class="col-md-3">
+                <label class="form-label small text-muted fw-medium">BUSCAR</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="search" name="q" class="form-control border-start-0" placeholder="Título ou descrição..." value="{{ q }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted fw-medium">PRIORIDADE</label>
+                <select name="prioridade" class="form-select">
+                    <option value="">Todas</option>
+                    <option value="alta" {% if prioridade_selected == 'alta' %}selected{% endif %}>🔴 Alta</option>
+                    <option value="media" {% if prioridade_selected == 'media' %}selected{% endif %}>🟡 Média</option>
+                    <option value="baixa" {% if prioridade_selected == 'baixa' %}selected{% endif %}>🔵 Baixa</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted fw-medium">CATEGORIA</label>
+                <select name="categoria" class="form-select">
+                    <option value="">Todas</option>
+                    {% for cat in categorias %}
+                        <option value="{{ cat.id }}" {% if categoria_selected|add:'' == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted fw-medium">STATUS</label>
+                <select name="status" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="pendente" {% if status_selected == 'pendente' %}selected{% endif %}>⏳ Pendentes</option>
+                    <option value="concluida" {% if status_selected == 'concluida' %}selected{% endif %}>✅ Concluídas</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary me-2 flex-fill">
+                    <i class="bi bi-funnel me-1"></i>Filtrar
+                </button>
+                <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Lista de tarefas -->
+{% if tarefas %}
 <div class="table-responsive">
     <table class="table table-hover align-middle">
-        <thead class="table-light">
+        <thead style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));">
             <tr>
-                <th>#</th>
-                <th>Título</th>
-                <th>Descrição</th>
-                <th>Status</th>
-                <th>Prioridade</th>
-                <th>Criada em</th>
+                <th class="border-0 fw-semibold text-muted small">#</th>
+                <th class="border-0 fw-semibold text-muted small">TAREFA</th>
+                <th class="border-0 fw-semibold text-muted small d-none d-md-table-cell">DESCRIÇÃO</th>
+                <th class="border-0 fw-semibold text-muted small">STATUS</th>
+                <th class="border-0 fw-semibold text-muted small">PRIORIDADE</th>
+                <th class="border-0 fw-semibold text-muted small d-none d-lg-table-cell">CRIADA EM</th>
                 {% if user.is_superuser %}
-                    <th>Owner</th>
+                    <th class="border-0 fw-semibold text-muted small d-none d-xl-table-cell">OWNER</th>
                 {% endif %}
-                <th>Categoria/Tags</th>
-                <th class="text-end">Ações</th>
+                <th class="border-0 fw-semibold text-muted small d-none d-md-table-cell">CATEGORIA/TAGS</th>
+                <th class="border-0 fw-semibold text-muted small text-end">AÇÕES</th>
             </tr>
         </thead>
         <tbody>
         {% for tarefa in tarefas %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ tarefa.titulo }}</td>
-            <td class="text-truncate" style="max-width:380px;">{{ tarefa.descricao }}</td>
+        <tr class="{% if tarefa.prioridade == 'alta' %}task-priority-alta{% elif tarefa.prioridade == 'media' %}task-priority-media{% else %}task-priority-baixa{% endif %}" style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <td class="fw-medium text-muted">{{ forloop.counter }}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    {% if tarefa.concluida %}
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    {% else %}
+                        <i class="bi bi-circle text-muted me-2"></i>
+                    {% endif %}
+                    <div>
+                        <div class="fw-medium {% if tarefa.concluida %}text-decoration-line-through text-muted{% endif %}">
+                            {{ tarefa.titulo }}
+                        </div>
+                        <small class="text-muted d-md-none">{{ tarefa.descricao|truncatechars:40 }}</small>
+                    </div>
+                </div>
+            </td>
+            <td class="text-muted d-none d-md-table-cell" style="max-width: 280px;">
+                <div class="text-truncate">{{ tarefa.descricao }}</div>
+            </td>
             <td>
                 {% if tarefa.concluida %}
-                    <span class="badge bg-success-subtle text-success-emphasis border border-success">Concluída</span>
+                    <span class="badge" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                        <i class="bi bi-check-lg me-1"></i>Concluída
+                    </span>
                 {% else %}
-                    <span class="badge bg-warning-subtle text-dark border border-warning">Pendente</span>
+                    <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                        <i class="bi bi-clock me-1"></i>Pendente
+                    </span>
                 {% endif %}
             </td>
             <td>
                 {% if tarefa.prioridade == 'alta' %}
-                    <span class="badge bg-danger">Alta</span>
+                    <span class="badge" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
+                        🔴 Alta
+                    </span>
                 {% elif tarefa.prioridade == 'media' %}
-                    <span class="badge bg-warning text-dark">Média</span>
+                    <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                        🟡 Média
+                    </span>
                 {% else %}
-                    <span class="badge bg-secondary">Baixa</span>
+                    <span class="badge" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;">
+                        🔵 Baixa
+                    </span>
                 {% endif %}
             </td>
-            <td>
-                {{ tarefa.created_at|date:"d/m/Y H:i" }}
+            <td class="d-none d-lg-table-cell">
+                <div class="small text-muted">
+                    <i class="bi bi-calendar3 me-1"></i>{{ tarefa.created_at|date:"d/m/Y" }}
+                    <br>
+                    <i class="bi bi-clock me-1"></i>{{ tarefa.created_at|date:"H:i" }}
+                </div>
                 {% if tarefa.completed_at %}
-                    <div class="text-success small">Concluída: {{ tarefa.completed_at|date:"d/m/Y H:i" }}</div>
+                    <div class="text-success small mt-1">
+                        <i class="bi bi-check-circle me-1"></i>{{ tarefa.completed_at|date:"d/m/Y H:i" }}
+                    </div>
                 {% endif %}
             </td>
 
             {% if user.is_superuser %}
-                <td>
+                <td class="d-none d-xl-table-cell">
                     {% if tarefa.owner %}
-                        {{ tarefa.owner.username }}
+                        <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px; background: linear-gradient(135deg, var(--brand-light), var(--brand)); border-radius: 50%; color: white; font-weight: 600; font-size: 0.7rem;">
+                                {{ tarefa.owner.username|first|upper }}
+                            </div>
+                            <span class="small">{{ tarefa.owner.username }}</span>
+                        </div>
                     {% else %}
-                        &mdash;
+                        <span class="text-muted">&mdash;</span>
                     {% endif %}
                 </td>
             {% endif %}
 
-            <td>
-                {% if tarefa.categoria %}<small class="badge bg-info text-dark">{{ tarefa.categoria.nome }}</small>{% endif %}
+            <td class="d-none d-md-table-cell">
+                {% if tarefa.categoria %}
+                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 me-1">
+                        <i class="bi bi-folder2 me-1"></i>{{ tarefa.categoria.nome }}
+                    </span>
+                {% endif %}
                 {% for tag in tarefa.tags.all %}
-                    <small class="badge bg-light border text-muted">{{ tag.nome }}</small>
+                    <span class="badge bg-light border text-muted me-1">
+                        <i class="bi bi-tag me-1"></i>{{ tag.nome }}
+                    </span>
                 {% endfor %}
             </td>
             <td class="text-end">
-                <a href="{% url 'editar_tarefa' tarefa.id %}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
-
-                <form action="{% url 'excluir_tarefa' tarefa.id %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir esta tarefa?');" title="Excluir">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </form>
+                <div class="d-flex justify-content-end gap-1">
+                    <a href="{% url 'editar_tarefa' tarefa.id %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <form action="{% url 'excluir_tarefa' tarefa.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir esta tarefa?');" title="Excluir">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
             </td>
         </tr>
         {% endfor %}
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="5">
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted">Total: {{ tarefas|length }} tarefas</small>
-                    </div>
-                </td>
-            </tr>
-        </tfoot>
     </table>
 </div>
+
+<!-- Footer da tabela -->
+<div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+    <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        Exibindo {{ tarefas|length }} de {{ tarefas|length }} tarefas
+    </small>
+    {% if tarefas|length > 10 %}
+    <nav aria-label="Navegação de páginas">
+        <ul class="pagination pagination-sm mb-0">
+            <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+            </li>
+            <li class="page-item active">
+                <span class="page-link">1</span>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Próximo</span>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% else %}
+<!-- Estado vazio -->
+<div class="text-center py-5">
+    <div class="mb-4">
+        <i class="bi bi-clipboard-x" style="font-size: 4rem; color: var(--brand); opacity: 0.3;"></i>
+    </div>
+    <h5 class="text-muted mb-3">Nenhuma tarefa encontrada</h5>
+    <p class="text-muted mb-4">
+        {% if q or prioridade_selected or categoria_selected or status_selected %}
+            Nenhuma tarefa corresponde aos filtros aplicados.<br>
+            <a href="{% url 'index' %}" class="text-decoration-none">Limpar filtros</a> ou 
+        {% else %}
+            Comece criando sua primeira tarefa e organize seu dia!
+        {% endif %}
+    </p>
+    <a href="{% url 'adicionar_tarefa' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Criar Primeira Tarefa
+    </a>
+</div>
+{% endif %}
 {% endblock %}
