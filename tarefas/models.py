@@ -35,13 +35,21 @@ class Tarefa(models.Model):
     tags = models.ManyToManyField(Tag, blank=True, related_name='tarefas', verbose_name='Tags')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tarefas', verbose_name='Proprietário')
 
-
     def save(self, *args, **kwargs):
-        if self.concluida and not self.completed_at:
-            self.completed_at = timezone.now()
-        if not self.concluida and self.completed_at:
-            self.completed_at = None
+        # ... seu save atual ...
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.titulo
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['created_at'], name='tarefa_created_at_idx'),
+            models.Index(fields=['prioridade'], name='tarefa_prioridade_idx'),
+            models.Index(fields=['completed_at'], name='tarefa_completed_at_idx'),
+            models.Index(fields=['categoria'], name='tarefa_categoria_idx'),
+            # owner FK já tem índice criado automaticamente pelo Django,
+            # mas você pode adicionar explicitamente se quiser:
+            # models.Index(fields=['owner'], name='tarefa_owner_idx'),
+        ]
+        ordering = ['-id']

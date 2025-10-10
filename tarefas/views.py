@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.core.paginator import Paginator
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from .models import Tarefa, Categoria, Tag
 from .forms import TarefaForm
@@ -28,38 +30,67 @@ def register(request):
 
 @login_required
 def index(request):
+    # base queryset: superuser vê tudo, outros apenas suas tarefas
     if request.user.is_superuser:
-        qs = Tarefa.objects.all().order_by('-id')
+        base_qs = Tarefa.objects.all()
     else:
-        qs = Tarefa.objects.filter(owner=request.user).order_by('-id')
+        base_qs = Tarefa.objects.filter(owner=request.user)
 
     q = request.GET.get('q', '').strip()
     prioridade = request.GET.get('prioridade', '')
     categoria = request.GET.get('categoria', '')
-    status = request.GET.get('status', '')  # 'pendente' | 'concluida' | ''
+    status = request.GET.get('status', '')  # 'pendente'|'concluida'|''
 
+    # filtros (aplicados sempre em base_qs)
     if q:
-        qs = qs.filter(Q(titulo__icontains=q) | Q(descricao__icontains=q))
+        base_qs = base_qs.filter(Q(titulo__icontains=q) | Q(descricao__icontains=q))
 
     if prioridade in ('alta', 'media', 'baixa'):
-        qs = qs.filter(prioridade=prioridade)
+        base_qs = base_qs.filter(prioridade=prioridade)
 
     if categoria.isdigit():
-        qs = qs.filter(categoria__id=int(categoria))
+        base_qs = base_qs.filter(categoria__id=int(categoria))
 
     if status == 'concluida':
-        qs = qs.filter(concluida=True)
+        base_qs = base_qs.filter(concluida=True)
     elif status == 'pendente':
-        qs = qs.filter(concluida=False)
+        base_qs = base_qs.filter(concluida=False)
+
+    # contagens agregadas (uma única query)
+    counts = base_qs.aggregate(
+        total=Count('id'),
+        concluidas=Count('id', filter=Q(concluida=True)),
+        pendentes=Count('id', filter=Q(concluida=False)),
+        alta_prioridade=Count('id', filter=Q(prioridade='alta')),
+    )
+
+    # otimizações: prefetch/select_related antes da paginação
+    qs = (
+        base_qs
+        .select_related('categoria', 'owner')  # FK
+        .prefetch_related('tags')              # M2M
+        .order_by('-id')
+    )
+
+    # paginação configurável (padrão 10)
+    per_page = getattr(settings, 'TAREFAS_PER_PAGE', 10)
+    paginator = Paginator(qs, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     categorias = Categoria.objects.all()
     tags = Tag.objects.all()
 
     context = {
-        'tarefas': qs,
-        'tarefas_concluidas': qs.filter(concluida=True),
-        'tarefas_pendentes': qs.filter(concluida=False),
-        'tarefas_alta_prioridade': qs.filter(prioridade='alta'),
+        'tarefas': page_obj.object_list,   # compatibilidade com template (lista exibida)
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'is_paginated': page_obj.has_other_pages(),
+        # contagens agregadas
+        'total_count': counts['total'],
+        'tarefas_concluidas_count': counts['concluidas'],
+        'tarefas_pendentes_count': counts['pendentes'],
+        'tarefas_alta_prioridade_count': counts['alta_prioridade'],
         'q': q,
         'prioridade_selected': prioridade,
         'categoria_selected': categoria,
